@@ -32,8 +32,6 @@ class ApiAuthMiddleware
             Auth::login($user);
         }
 
-        
-
         if($authenticate) {
             return $next($request);
         } else {
