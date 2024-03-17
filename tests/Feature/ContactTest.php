@@ -132,7 +132,8 @@ class ContactTest extends TestCase
             ]);
     }
 
-    public function testUpdateSuccess() {
+    public function testUpdateSuccess()
+    {
         $this->seed([UserSeeder::class, ContactSeeder::class]);
         $contact = Contact::query()->limit(1)->first();
 
@@ -143,7 +144,7 @@ class ContactTest extends TestCase
                 'last_name' => 'test2',
                 'email' => 'test2@gmail.com',
                 'phone' => '222',
-            ], 
+            ],
             [
                 'Authorization' => 'test'
             ]
@@ -156,10 +157,10 @@ class ContactTest extends TestCase
                     'phone' => '222',
                 ]
             ]);
-
     }
 
-    public function testUpdateValidationError() {
+    public function testUpdateValidationError()
+    {
         $this->seed([UserSeeder::class, ContactSeeder::class]);
         $contact = Contact::query()->limit(1)->first();
 
@@ -170,7 +171,7 @@ class ContactTest extends TestCase
                 'last_name' => 'test2',
                 'email' => 'test2@gmail.com',
                 'phone' => '222',
-            ], 
+            ],
             [
                 'Authorization' => 'test'
             ]
@@ -184,7 +185,8 @@ class ContactTest extends TestCase
             ]);
     }
 
-    public function testUpdateUnauthorize() {
+    public function testUpdateUnauthorize()
+    {
         $this->seed([UserSeeder::class, ContactSeeder::class]);
         $contact = Contact::query()->limit(1)->first();
 
@@ -195,7 +197,7 @@ class ContactTest extends TestCase
                 'last_name' => 'test2',
                 'email' => 'test2@gmail.com',
                 'phone' => '222',
-            ], 
+            ],
             [
                 'Authorization' => 'salah'
             ]
@@ -209,4 +211,42 @@ class ContactTest extends TestCase
             ]);
     }
 
+    public function testDeleteSuccess()
+    {
+        $this->seed([UserSeeder::class, ContactSeeder::class]);
+        $contact = Contact::query()->limit(1)->first();
+
+        $this->delete(
+            '/api/contacts/' . $contact->id,
+            [],
+            [
+                'Authorization' => 'test'
+            ]
+        )->assertStatus(200)
+            ->assertJson([
+                'data' => true,
+            ]);
+    }
+
+    public function testDeleteNotFound()
+    {
+        $this->seed([UserSeeder::class, ContactSeeder::class]);
+
+        $contact = Contact::query()->limit(1)->first();
+
+        $this->delete(
+            '/api/contacts/' . ($contact->id + 1),
+            [],
+            [
+                'Authorization' => 'test'
+            ]
+        )->assertStatus(404)
+            ->assertJson([
+                "errors" => [
+                    "message" => [
+                        "not found"
+                    ]
+                ]
+            ]);
+    }
 }
